@@ -1,38 +1,153 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Wemo Project 面試測驗
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-  
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 題目
 
-## Description
+- 框架使用 NestJS (<https://docs.nestjs.com/>)
+- 需實際連 relational DB, 何種 DB 不拘
+- 設計後端 Node.js server
+- 需求: 請實作租車流程
+  - 基本三張表資料: User, Scooter, Rent
+  - 同一 user 同時只能租一台車
+  - 同一台車只能被同一個 user 租賃
+  - 紀錄使用者租車的時間(起迄時間)
+- 以上為必需條件, 需包含測試.
+- 其他可自由發揮, 任何你覺得應該要有，但是我們沒有提到的部分
+- 推上任一版控平台 (GitHub, BitBucket … etc) 並於面試前提交連結, 包含說明文件
+- 我們會要求在面試時呈現你的作業, 包含環境設定、執行程式
+- 有能力充分表達設計概念
+- 過程中問題都可以來信討論
+- 任何你覺得有趣可展示的實作或架構
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 說明
 
-## Installation
+### 資料設計
+
+![流程圖](/image/db.png)
+
+### 資料夾結構
+
+```
+├── src
+│   ├── common
+│   │   ├── decorators
+│   │   │   └── public.decorator.ts
+│   │   ├── exceptions
+│   │   │   └── custom.exception.ts
+│   │   ├── filters
+│   │   │   └── http-exception.filter.ts
+│   │   ├── guard
+│   │   │   └── auth.guard.ts
+│   │   └── interceptors
+│   │       └── transform.interceptor.ts
+│   ├── constants
+│   │   └── common.constants.ts
+│   ├── controllers
+│   │   ├── auth
+│   │   │   ├── auth.controller.spec.ts
+│   │   │   └── auth.controller.ts
+│   │   ├── rent
+│   │   │   ├── rent.controller.spec.ts
+│   │   │   └── rent.controller.ts
+│   │   ├── scooter
+│   │   │   ├── scooter.controller.spec.ts
+│   │   │   └── scooter.controller.ts
+│   │   └── user
+│   │       ├── user.controller.spec.ts
+│   │       └── user.controller.ts
+│   ├── entity
+│   │   ├── rent.entity.ts
+│   │   ├── rentStatus.entity.ts
+│   │   ├── scooters.entity.ts
+│   │   ├── scooterState.entity.ts
+│   │   └── users.entity.ts
+│   ├── main.ts # 程式進入點
+│   ├── modules
+│   │   ├── app.module.ts
+│   │   ├── auth
+│   │   │   └── auth.module.ts
+│   │   ├── database
+│   │   │   └── database.module.ts
+│   │   ├── rent
+│   │   │   └── rent.module.ts
+│   │   ├── scooter
+│   │   │   └── scooter.module.ts
+│   │   └── user
+│   │       └── user.module.ts
+│   └── services
+│       ├── auth
+│       │   ├── auth.service.spec.ts
+│       │   ├── auth.service.ts
+│       │   └── dto
+│       │       └── user.dto.ts
+│       ├── rent
+│       │   ├── dto
+│       │   │   └── rent.dto.ts
+│       │   ├── rent.service.spec.ts
+│       │   └── rent.service.ts
+│       ├── scooter
+│       │   ├── dto
+│       │   │   └── scooter.dto.ts
+│       │   ├── scooter.service.spec.ts
+│       │   └── scooter.service.ts
+│       └── user
+│           ├── dto
+│           │   └── user.dto.ts
+│           ├── user.service.spec.ts
+│           └── user.service.ts
+├── initial.sql
+├── nest-cli.json
+├── package.json
+├── README.md
+├── tsconfig.build.json
+└── tsconfig.json
+```
+
+### 情境
+
+程式啟動後，可以參考 swagger API 文件。（路徑：`/api`）
+
+#### 註冊登入
+
+使用者可以透過 `POST/register` 註冊會員，`POST/login` 登入取得 `Authorization token`。
+
+設置 `Authroization` 後，透過 `GET/me` 驗證 token 並取得使用者資料。
+
+#### 取得車輛資訊
+
+使用者可以透過 `GET/scooter` 取得所有車輛狀態，再透過 `GET/scooter/:id` 取得指定車輛詳細資訊。
+
+#### 租借流程
+
+使用者可以透過 `POST/rent` 租用車輛，再透過 `PUT/scooter` 更改結束租用。
+
+#### 使用者租借紀錄
+
+使用者可以透過 `GET/user/rent` 取得該使用者所有租借紀錄。
+
+## 啟動方式
+
+### 設置環境變數
+
+需新增 `.env` 檔案，並設置下列參數：
+
+```
+JWT_SECRET=
+HASH_SALT=
+
+DB_PORT=
+DB_HOST=
+DB_USER=
+DB_PASSWORD=
+DB_NAME=
+```
+
+### Installation
 
 ```bash
 $ npm install
 ```
 
-## Running the app
+### Running the app
 
 ```bash
 # development
@@ -45,29 +160,9 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Test
+### Test
 
 ```bash
 # unit tests
 $ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
 ```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-  Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
