@@ -6,7 +6,6 @@ import { Rent } from 'src/entity/rent.entity';
 import { RentStatus } from 'src/constants/common.constants';
 import {
   NotFoundException,
-  ForbiddenException,
   BadRequestException
 } from 'src/common/exceptions/custom.exception';
 import { plainToClass } from 'class-transformer';
@@ -76,7 +75,7 @@ describe('RentService', () => {
       );
     });
 
-    it('should throw ForbiddenException when rent status is already finished', async () => {
+    it('should throw BadRequestException when rent status is already finished', async () => {
       const rentId = 1;
       const rentData: UpdateRentDTO = {
         id: rentId,
@@ -89,7 +88,7 @@ describe('RentService', () => {
       rentRepository.findOne = jest.fn().mockResolvedValue(existingRent);
 
       await expect(rentService.update(rentData)).rejects.toThrowError(
-        ForbiddenException
+        BadRequestException
       );
     });
 

@@ -6,8 +6,7 @@ import { Rent } from 'src/entity/rent.entity';
 import { RentStatus } from 'src/constants/common.constants';
 import {
   NotFoundException,
-  BadRequestException,
-  ForbiddenException
+  BadRequestException
 } from 'src/common/exceptions/custom.exception';
 import { plainToClass } from 'class-transformer';
 
@@ -34,7 +33,7 @@ export class RentService {
     const { id, status } = data;
     const rent = await this.rentRespository.findOne({ where: { id } });
     if (!rent) throw new NotFoundException('Rent is not exist.');
-    if (rent.status === RentStatus.FINISHED) throw new ForbiddenException();
+    if (rent.status === RentStatus.FINISHED) throw new BadRequestException();
 
     if (status === RentStatus.FINISHED) {
       const endTime = new Date();
