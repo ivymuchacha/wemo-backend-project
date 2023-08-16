@@ -4,8 +4,8 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { ScooterService } from './scooter.service';
 import { Scooter } from 'src/entity/scooters.entity';
 import { plainToClass } from 'class-transformer';
-import { ScooterDTO } from './dto/scooter.dto';
-import { ScooterStatus } from 'src/constants/common.constants';
+import { ScooterDTO, GetScooterDTO } from './dto/scooter.dto';
+import { RentStatus, ScooterStatus } from 'src/constants/common.constants';
 
 describe('ScooterService', () => {
   let scooterService: ScooterService;
@@ -32,24 +32,35 @@ describe('ScooterService', () => {
     expect(scooterService).toBeDefined();
   });
 
-  describe('getAvailable', () => {
-    it('should return available scooters', async () => {
+  describe('getScooters', () => {
+    it('should return scooters', async () => {
       const availableScooters = [
-        { id: 1, state: ScooterStatus.AVAILABLE, rents: [] },
-        { id: 2, state: ScooterStatus.AVAILABLE, rents: [] }
+        {
+          id: 1,
+          name: 'ScooterA',
+          state: ScooterStatus.AVAILABLE,
+          rentStatus: RentStatus.RENT
+        },
+        {
+          id: 2,
+          name: 'ScooterB',
+          state: ScooterStatus.AVAILABLE,
+          rentStatus: RentStatus.FINISHED
+        }
       ];
       scooterRepository.createQueryBuilder = jest.fn().mockReturnValue({
         leftJoinAndSelect: jest.fn().mockReturnThis(),
-        where: jest.fn().mockReturnThis(),
-        andWhere: jest.fn().mockReturnThis(),
-        getMany: jest.fn().mockResolvedValue(availableScooters)
+        select: jest.fn().mockReturnThis(),
+        addSelect: jest.fn().mockReturnThis(),
+        groupBy: jest.fn().mockReturnThis(),
+        getRawMany: jest.fn().mockResolvedValue(availableScooters)
       });
 
-      const result: ScooterDTO[] = availableScooters.map((element) =>
-        plainToClass(ScooterDTO, element, { excludeExtraneousValues: true })
+      const result: GetScooterDTO[] = availableScooters.map((element) =>
+        plainToClass(GetScooterDTO, element, { excludeExtraneousValues: true })
       );
 
-      expect(await scooterService.getAvailable()).toEqual(result);
+      expect(await scooterService.getScooters()).toEqual(result);
     });
   });
 
@@ -58,8 +69,10 @@ describe('ScooterService', () => {
       const scooterId = 1;
       const scooterData = {
         id: scooterId,
-        state: ScooterStatus.AVAILABLE,
-        rents: []
+        name: 'ScooterA',
+        licenseNumber: 'AAA-001',
+        price: 100,
+        state: ScooterStatus.AVAILABLE
       };
       scooterRepository.findOne = jest.fn().mockResolvedValue(scooterData);
 

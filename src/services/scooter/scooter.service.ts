@@ -2,9 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Scooter } from 'src/entity/scooters.entity';
-import { ScooterDTO } from 'src/services/scooter/dto/scooter.dto';
+import {
+  ScooterDTO,
+  GetScooterDTO
+} from 'src/services/scooter/dto/scooter.dto';
 import { plainToClass } from 'class-transformer';
-import { RentStatus, ScooterStatus } from 'src/constants/common.constants';
+import { RentStatus } from 'src/constants/common.constants';
 
 @Injectable()
 export class ScooterService {
@@ -13,19 +16,19 @@ export class ScooterService {
     private scooterRespository: Repository<Scooter>
   ) {}
 
-  async getAvailable(): Promise<ScooterDTO[]> {
+  async getScooters(): Promise<GetScooterDTO[]> {
     const result = await this.scooterRespository
       .createQueryBuilder('scooter')
       .leftJoinAndSelect('scooter.rents', 'rent')
-      .where('scooter.state = :state', { state: ScooterStatus.AVAILABLE })
-      .andWhere('(rent.status IS NULL OR rent.status != :status)', {
-        status: RentStatus.RENT
-      })
-      .getMany();
+      .select(['scooter.id', 'scooter.name', 'scooter.state'])
+      .addSelect(
+        `CASE WHEN SUM(rent.status = ${RentStatus.RENT}) > 0 THEN 1 ELSE 2 END`,
+        'rentStatus'
+      )
+      .groupBy('scooter.id')
+      .getRawMany();
 
-    return result.map((element) =>
-      plainToClass(ScooterDTO, element, { excludeExtraneousValues: true })
-    );
+    return result.map((element) => plainToClass(GetScooterDTO, element));
   }
 
   async getById(id: number): Promise<ScooterDTO> {

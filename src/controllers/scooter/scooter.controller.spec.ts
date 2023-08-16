@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ScooterController } from './scooter.controller';
 import { ScooterService } from 'src/services/scooter/scooter.service';
-import { ScooterDTO } from 'src/services/scooter/dto/scooter.dto';
-import { ScooterStatus } from 'src/constants/common.constants';
+import { GetScooterDTO } from 'src/services/scooter/dto/scooter.dto';
+import { ScooterStatus, RentStatus } from 'src/constants/common.constants';
 
 describe('ScooterController', () => {
   let controller: ScooterController;
@@ -15,7 +15,8 @@ describe('ScooterController', () => {
         {
           provide: ScooterService,
           useValue: {
-            getAvailable: jest.fn()
+            getScooters: jest.fn(),
+            getById: jest.fn()
           }
         }
       ]
@@ -29,29 +30,45 @@ describe('ScooterController', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('getAvailableScooter', () => {
-    it('should return available scooters', async () => {
-      const availableScooters: ScooterDTO[] = [
+  describe('getScooters', () => {
+    it('should return scooters', async () => {
+      const availableScooters: GetScooterDTO[] = [
         {
           id: 1,
-          name: 'Scooter A',
-          licenseNumber: 'A',
-          price: 100,
-          state: ScooterStatus.AVAILABLE
+          name: 'ScooterA',
+          state: ScooterStatus.AVAILABLE,
+          rentStatus: RentStatus.RENT
         },
         {
           id: 2,
-          name: 'Scooter B',
-          licenseNumber: 'B',
-          price: 100,
-          state: ScooterStatus.AVAILABLE
+          name: 'ScooterB',
+          state: ScooterStatus.AVAILABLE,
+          rentStatus: RentStatus.RENT
         }
       ];
       jest
-        .spyOn(scooterService, 'getAvailable')
+        .spyOn(scooterService, 'getScooters')
         .mockImplementation(() => Promise.resolve(availableScooters));
 
-      expect(await controller.getAvailableScooter()).toBe(availableScooters);
+      expect(await controller.getScooters()).toBe(availableScooters);
+    });
+  });
+
+  describe('getById', () => {
+    it('should return scooter info', async () => {
+      const scooterId = 1;
+      const scooterData = {
+        id: scooterId,
+        name: 'ScooterA',
+        licenseNumber: 'AAA-001',
+        price: 100,
+        state: ScooterStatus.AVAILABLE
+      };
+      jest
+        .spyOn(scooterService, 'getById')
+        .mockImplementation(() => Promise.resolve(scooterData));
+
+      expect(await controller.getById(scooterId)).toBe(scooterData);
     });
   });
 });
