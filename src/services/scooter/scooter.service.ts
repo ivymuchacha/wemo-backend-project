@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Scooter } from 'src/entity/scooters.entity';
-import { ScooterDTO } from './dto/scooter.dto';
+import { ScooterDTO } from 'src/services/scooter/dto/scooter.dto';
 import { plainToClass } from 'class-transformer';
 import { RentStatus, ScooterStatus } from 'src/constants/common.constants';
 

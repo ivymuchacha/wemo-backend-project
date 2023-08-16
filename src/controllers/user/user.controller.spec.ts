@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
-import { UserService } from './user.service';
-import { RentInfoDTO, ScooterInfoDTO } from './dto/user.dto';
+import { UserService } from 'src/services/user/user.service';
+import { RentInfoDTO, ScooterInfoDTO } from '../../services/user/dto/user.dto';
 import { RentStatus } from 'src/constants/common.constants';
 
 describe('UserController', () => {

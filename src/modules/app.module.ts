@@ -1,15 +1,15 @@
 import { Module, ValidationPipe } from '@nestjs/common';
-import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, APP_GUARD } from '@nestjs/core';
-import { UserModule } from './user/user.module';
-import { TransformInterceptor } from '../common/interceptors/transform.interceptor';
-import { HttpExceptionFilter } from '../common/filters/http-exception.filter';
-import { DataModule } from './data.module';
 import { ConfigModule } from '@nestjs/config';
-import { AuthModule } from './auth/auth.module';
-import { AuthGuard } from 'src/common/guard/auth.guard';
 import { JwtService } from '@nestjs/jwt';
-import { ScooterModule } from './scooter/scooter.module';
-import { RentModule } from './rent/rent.module';
+import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE, APP_GUARD } from '@nestjs/core';
+import { UserModule } from 'src/modules/user/user.module';
+import { TransformInterceptor } from 'src/common/interceptors/transform.interceptor';
+import { HttpExceptionFilter } from 'src/common/filters/http-exception.filter';
+import { DataModule } from 'src/modules/database/data.module';
+import { AuthModule } from 'src/modules/auth/auth.module';
+import { AuthGuard } from 'src/common/guard/auth.guard';
+import { ScooterModule } from 'src/modules/scooter/scooter.module';
+import { RentModule } from 'src/modules/rent/rent.module';
 
 @Module({
   imports: [

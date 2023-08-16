@@ -10,7 +10,7 @@ import {
   BadRequestException
 } from 'src/common/exceptions/custom.exception';
 import { plainToClass } from 'class-transformer';
-import { UpdateRentDTO, RentDTO } from './dto/rent.dto';
+import { UpdateRentDTO, RentDTO } from 'src/services/rent/dto/rent.dto';
 
 describe('RentService', () => {
   let rentService: RentService;

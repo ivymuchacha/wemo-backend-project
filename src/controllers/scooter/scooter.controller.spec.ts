@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ScooterController } from './scooter.controller';
-import { ScooterService } from './scooter.service';
-import { ScooterDTO } from './dto/scooter.dto';
+import { ScooterService } from 'src/services/scooter/scooter.service';
+import { ScooterDTO } from 'src/services/scooter/dto/scooter.dto';
 import { ScooterStatus } from 'src/constants/common.constants';
 
 describe('ScooterController', () => {

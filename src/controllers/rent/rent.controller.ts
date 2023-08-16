@@ -1,8 +1,12 @@
 import { Controller, Post, Body, Request, Put } from '@nestjs/common';
-import { RentService } from './rent.service';
-import { CreateRentDTO, UpdateRentDTO, RentDTO } from './dto/rent.dto';
+import { RentService } from 'src/services/rent/rent.service';
+import {
+  CreateRentDTO,
+  UpdateRentDTO,
+  RentDTO
+} from 'src/services/rent/dto/rent.dto';
 import { ForbiddenException } from 'src/common/exceptions/custom.exception';
-import { ScooterService } from '../scooter/scooter.service';
+import { ScooterService } from 'src/services/scooter/scooter.service';
 import { ScooterStatus } from 'src/constants/common.constants';
 
 @Controller('rent')

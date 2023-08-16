@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entity/users.entity';
 import { Repository } from 'typeorm';
-import { CreateUserDTO } from 'src/modules/auth/dto/user.dto';
-import { RentInfoDTO } from 'src/modules/user/dto/user.dto';
+import { CreateUserDTO } from 'src/services/auth/dto/user.dto';
+import { RentInfoDTO } from 'src/services/user/dto/user.dto';
 import { Rent } from 'src/entity/rent.entity';
 import { plainToClass } from 'class-transformer';
 

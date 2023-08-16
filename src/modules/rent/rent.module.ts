@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { RentService } from './rent.service';
-import { RentController } from './rent.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { RentService } from 'src/services/rent/rent.service';
+import { RentController } from 'src/controllers/rent/rent.controller';
 import { Rent } from 'src/entity/rent.entity';
-import { ScooterModule } from '../scooter/scooter.module';
+import { ScooterModule } from 'src/modules/scooter/scooter.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Rent]), ScooterModule],

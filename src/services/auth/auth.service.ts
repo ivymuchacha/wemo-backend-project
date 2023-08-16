@@ -5,13 +5,13 @@ import {
   CreateUserDTO,
   UserDTO,
   LoginResponseDTO
-} from 'src/modules/auth/dto/user.dto';
+} from 'src/services/auth/dto/user.dto';
 import {
   ConflictException,
   NotFoundException,
   UnauthorizedException
 } from 'src/common/exceptions/custom.exception';
-import { UserService } from 'src/modules/user/user.service';
+import { UserService } from 'src/services/user/user.service';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()

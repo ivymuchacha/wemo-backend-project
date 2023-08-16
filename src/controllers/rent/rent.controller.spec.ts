@@ -1,11 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RentController } from './rent.controller';
-import { RentService } from './rent.service';
-import { ScooterService } from '../scooter/scooter.service';
-import { CreateRentDTO, UpdateRentDTO, RentDTO } from './dto/rent.dto';
+import { RentService } from 'src/services/rent/rent.service';
+import { ScooterService } from 'src/services/scooter/scooter.service';
+import {
+  CreateRentDTO,
+  UpdateRentDTO,
+  RentDTO
+} from 'src/services/rent/dto/rent.dto';
 import { ForbiddenException } from 'src/common/exceptions/custom.exception';
 import { RentStatus, ScooterStatus } from 'src/constants/common.constants';
-import { ScooterDTO } from '../scooter/dto/scooter.dto';
+import { ScooterDTO } from 'src/services/scooter/dto/scooter.dto';
 
 describe('RentController', () => {
   let controller: RentController;
