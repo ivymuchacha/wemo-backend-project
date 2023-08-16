@@ -26,7 +26,7 @@ export class ScooterController {
   })
   @ApiResponse({ type: ScooterDTO })
   @Get('/:id')
-  async getById(@Param() id: number) {
+  async getById(@Param('id') id: number) {
     return await this.scooterService.getById(id);
   }
 }

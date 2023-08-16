@@ -24,7 +24,7 @@ export class AuthService {
 
   async register(data: CreateUserDTO): Promise<void> {
     const { username, password, name } = data;
-    const user = await this.userService.findOne(username);
+    const user = await this.userService.findOne({ username });
     if (user) throw new ConflictException('Username already exists.');
 
     const hashPassword = await bcrypt.hash(
@@ -41,7 +41,7 @@ export class AuthService {
 
   async login(data: UserDTO): Promise<LoginResponseDTO> {
     const { username, password } = data;
-    const user = await this.userService.findOne(username);
+    const user = await this.userService.findOne({ username });
     if (!user) throw new NotFoundException();
 
     const isValid = await bcrypt.compare(password, user.password);

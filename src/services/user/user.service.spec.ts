@@ -42,13 +42,13 @@ describe('UserService', () => {
   });
 
   describe('findOne', () => {
-    it('should return a user when a valid username is provided', async () => {
+    it('should return a user when a username or id is provided', async () => {
       const mockUser = new User();
       mockUser.username = 'testUser';
 
       userRepository.findOne = jest.fn().mockResolvedValue(mockUser);
 
-      const result = await userService.findOne('testUser');
+      const result = await userService.findOne({ username: 'testUser' });
       expect(result).toEqual(mockUser);
     });
   });

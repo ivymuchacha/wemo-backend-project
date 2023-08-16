@@ -3,35 +3,56 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RentService } from './rent.service';
 import { Rent } from 'src/entity/rent.entity';
-import { RentStatus } from 'src/constants/common.constants';
+import { RentStatus, ScooterStatus } from 'src/constants/common.constants';
 import {
   NotFoundException,
   BadRequestException
 } from 'src/common/exceptions/custom.exception';
 import { plainToClass } from 'class-transformer';
 import { UpdateRentDTO, RentDTO } from 'src/services/rent/dto/rent.dto';
+import { UserService } from 'src/services/user/user.service';
+import { User } from 'src/entity/users.entity';
+import { Scooter } from 'src/entity/scooters.entity';
+import { RentStatus as RentStatusEntity } from 'src/entity/rentStatus.entity';
+import { ScooterState } from 'src/entity/scooterState.entity';
 
 describe('RentService', () => {
   let rentService: RentService;
+  let userService: UserService;
   let rentRepository: Repository<Rent>;
+  let rentStatusRepository: Repository<RentStatusEntity>;
 
   const nowTime = new Date('2023/01/01');
   const startTime = new Date('2022/01/01');
   const wrongStartTime = new Date('2023/01/02');
 
+  const mockUserService = {
+    findOne: jest.fn(),
+    create: jest.fn()
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RentService,
+        { provide: UserService, useValue: mockUserService },
         {
           provide: getRepositoryToken(Rent),
+          useClass: Repository
+        },
+        {
+          provide: getRepositoryToken(RentStatusEntity),
           useClass: Repository
         }
       ]
     }).compile();
 
     rentService = module.get<RentService>(RentService);
+    userService = module.get<UserService>(UserService);
     rentRepository = module.get<Repository<Rent>>(getRepositoryToken(Rent));
+    rentStatusRepository = module.get<Repository<RentStatusEntity>>(
+      getRepositoryToken(RentStatusEntity)
+    );
   });
 
   it('should be defined', () => {
@@ -41,14 +62,40 @@ describe('RentService', () => {
   describe('create', () => {
     it('should create a rent', async () => {
       const userId = 1;
-      const scooterId = 2;
-      const rentData = { userId, scooterId };
+      const scooterState: ScooterState = {
+        id: ScooterStatus.AVAILABLE,
+        name: '正常'
+      } as ScooterState;
+      const scooter: Scooter = {
+        id: 2,
+        name: 'Scooter Test',
+        license_number: 'TEST-123',
+        price: 60,
+        state: scooterState
+      } as Scooter;
+      const rentData = { userId, scooter };
+
+      const mockUser: User = {
+        id: userId,
+        username: 'testUser',
+        password: 'hashedPassword',
+        name: 'Test User'
+      } as User;
+      userService.findOne = jest.fn().mockResolvedValue(mockUser);
+
+      const mockRentStatus = {
+        id: 1,
+        name: '租借中'
+      } as RentStatusEntity;
+      rentStatusRepository.findOne = jest
+        .fn()
+        .mockResolvedValue(mockRentStatus);
 
       const createdRent = new Rent();
-      createdRent.userId = userId;
-      createdRent.scooterId = scooterId;
+      createdRent.user = mockUser;
+      createdRent.scooter = scooter;
       createdRent.start_time = new Date();
-      createdRent.status = RentStatus.RENT;
+      createdRent.status = mockRentStatus;
 
       rentRepository.save = jest.fn().mockResolvedValue(createdRent);
 
@@ -83,7 +130,7 @@ describe('RentService', () => {
       };
       const existingRent = new Rent();
       existingRent.id = rentId;
-      existingRent.status = RentStatus.FINISHED;
+      existingRent.status = { id: RentStatus.FINISHED } as RentStatusEntity;
 
       rentRepository.findOne = jest.fn().mockResolvedValue(existingRent);
 
@@ -101,7 +148,7 @@ describe('RentService', () => {
       const existingRent = new Rent();
       existingRent.id = rentId;
       existingRent.start_time = wrongStartTime;
-      existingRent.status = RentStatus.RENT;
+      existingRent.status = { id: RentStatus.RENT } as RentStatusEntity;
       rentRepository.findOne = jest.fn().mockResolvedValue(existingRent);
       jest.spyOn(global, 'Date').mockImplementation(() => nowTime);
 
@@ -118,14 +165,20 @@ describe('RentService', () => {
       };
       const existingRent = new Rent();
       existingRent.id = rentId;
-      existingRent.status = RentStatus.RENT;
+      existingRent.status = { id: RentStatus.RENT } as RentStatusEntity;
       existingRent.start_time = startTime;
       rentRepository.findOne = jest.fn().mockResolvedValue(existingRent);
+
+      const mockNewRentStatus = { id: RentStatus.FINISHED } as RentStatusEntity;
+      rentStatusRepository.findOne = jest
+        .fn()
+        .mockResolvedValue(mockNewRentStatus);
+
       jest.spyOn(global, 'Date').mockImplementation(() => nowTime);
 
       const finishedRent = {
         ...existingRent,
-        status: RentStatus.FINISHED,
+        status: mockNewRentStatus,
         end_time: nowTime
       };
       rentRepository.save = jest.fn().mockResolvedValue(finishedRent);

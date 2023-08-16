@@ -32,7 +32,11 @@ export class ScooterService {
   }
 
   async getById(id: number): Promise<ScooterDTO> {
-    const result = await this.scooterRespository.findOne({ where: { id } });
+    const result = await this.scooterRespository.findOne({
+      where: { id },
+      loadRelationIds: { relations: ['state'] }
+    });
+
     return plainToClass(ScooterDTO, result, { excludeExtraneousValues: true });
   }
 }

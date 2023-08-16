@@ -38,7 +38,7 @@ export class RentController {
     if (scooter?.state !== ScooterStatus.AVAILABLE)
       throw new ForbiddenException('Scooter is not available.');
 
-    return await this.rentService.create({ userId, scooterId });
+    return await this.rentService.create({ userId, scooter });
   }
 
   @ApiOperation({

@@ -63,9 +63,9 @@ describe('AuthService', () => {
       mockUserService.create.mockResolvedValue(createUserDTO);
 
       await authService.register(createUserDTO);
-      expect(mockUserService.findOne).toHaveBeenCalledWith(
-        createUserDTO.username
-      );
+      expect(mockUserService.findOne).toHaveBeenCalledWith({
+        username: createUserDTO.username
+      });
       expect(mockUserService.create).toHaveBeenCalledWith({
         username: createUserDTO.username,
         password: mockHashedPassword,
@@ -113,7 +113,9 @@ describe('AuthService', () => {
       const expectedLoginResponse: LoginResponseDTO = { token: mockToken };
 
       const result = await authService.login(userDTO);
-      expect(mockUserService.findOne).toHaveBeenCalledWith(userDTO.username);
+      expect(mockUserService.findOne).toHaveBeenCalledWith({
+        username: userDTO.username
+      });
       expect(spiedBcryptCompateMethod).toHaveBeenCalledWith(
         userDTO.password,
         mockUser.password

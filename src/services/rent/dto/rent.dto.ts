@@ -1,5 +1,5 @@
 import { IsInt, IsNotEmpty } from 'class-validator';
-import { Expose, Type } from 'class-transformer';
+import { Expose, Type, Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { RentStatus } from 'src/constants/common.constants';
 
@@ -45,6 +45,7 @@ export class RentDTO {
   @IsInt()
   @Expose()
   @IsNotEmpty()
+  @Transform(({ obj }) => obj.status.id)
   readonly status: RentStatus;
 
   @ApiProperty({ description: '租借開始時間' })

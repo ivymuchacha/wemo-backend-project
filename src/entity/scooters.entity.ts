@@ -1,5 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  ManyToOne
+} from 'typeorm';
 import { Rent } from './rent.entity';
+import { ScooterState } from './scooterState.entity';
 
 @Entity('scooter')
 export class Scooter {
@@ -21,10 +28,8 @@ export class Scooter {
   @Column()
   price: number;
 
-  @Column({
-    type: 'int'
-  })
-  state: number;
+  @ManyToOne(() => ScooterState, (state) => state.scooters)
+  state: ScooterState;
 
   @Column({
     type: 'timestamp',
