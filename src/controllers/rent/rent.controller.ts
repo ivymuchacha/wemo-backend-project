@@ -5,7 +5,7 @@ import {
   UpdateRentDTO,
   RentDTO
 } from 'src/services/rent/dto/rent.dto';
-import { ForbiddenException } from 'src/common/exceptions/custom.exception';
+import { ConflictException } from 'src/common/exceptions/custom.exception';
 import { ScooterService } from 'src/services/scooter/scooter.service';
 import { ScooterStatus } from 'src/constants/common.constants';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
@@ -32,11 +32,14 @@ export class RentController {
     const { scooterId } = body;
 
     const isValidUser = await this.rentService.checkUserAbleToRent(userId);
-    if (!isValidUser) throw new ForbiddenException('User is already rent.');
+    if (!isValidUser) throw new ConflictException('User is already rent.');
 
     const scooter = await this.scooterService.getById(scooterId);
-    if (scooter?.state !== ScooterStatus.AVAILABLE)
-      throw new ForbiddenException('Scooter is not available.');
+    const isValidScooter = await this.rentService.checkScooterAbleToRent(
+      scooterId
+    );
+    if (scooter?.state !== ScooterStatus.AVAILABLE || !isValidScooter)
+      throw new ConflictException('Scooter is not available.');
 
     return await this.rentService.create({ userId, scooter });
   }
@@ -47,7 +50,11 @@ export class RentController {
   })
   @ApiResponse({ type: RentDTO })
   @Put()
-  async update(@Body() body: UpdateRentDTO): Promise<RentDTO> {
-    return await this.rentService.update(body);
+  async update(
+    @Request() request,
+    @Body() body: UpdateRentDTO
+  ): Promise<RentDTO> {
+    const { id: userId } = request.user;
+    return await this.rentService.update(userId, body);
   }
 }

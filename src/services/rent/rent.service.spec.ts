@@ -110,6 +110,7 @@ describe('RentService', () => {
   describe('update', () => {
     it('should throw NotFoundException when rent is not found', async () => {
       const rentId = 1;
+      const userId = 1;
       const rentData: UpdateRentDTO = {
         id: rentId,
         status: RentStatus.FINISHED
@@ -117,13 +118,14 @@ describe('RentService', () => {
 
       rentRepository.findOne = jest.fn().mockResolvedValue(null);
 
-      await expect(rentService.update(rentData)).rejects.toThrowError(
+      await expect(rentService.update(userId, rentData)).rejects.toThrowError(
         NotFoundException
       );
     });
 
     it('should throw BadRequestException when rent status is already finished', async () => {
       const rentId = 1;
+      const userId = 1;
       const rentData: UpdateRentDTO = {
         id: rentId,
         status: RentStatus.FINISHED
@@ -131,15 +133,16 @@ describe('RentService', () => {
       const existingRent = new Rent();
       existingRent.id = rentId;
       existingRent.status = { id: RentStatus.FINISHED } as RentStatusEntity;
-
+      existingRent.user = { id: userId } as User;
       rentRepository.findOne = jest.fn().mockResolvedValue(existingRent);
 
-      await expect(rentService.update(rentData)).rejects.toThrowError(
+      await expect(rentService.update(userId, rentData)).rejects.toThrowError(
         BadRequestException
       );
     });
 
     it('should throw BadRequestException when rent start time is greater than end time', async () => {
+      const userId = 1;
       const rentId = 1;
       const rentData: UpdateRentDTO = {
         id: rentId,
@@ -149,15 +152,17 @@ describe('RentService', () => {
       existingRent.id = rentId;
       existingRent.start_time = wrongStartTime;
       existingRent.status = { id: RentStatus.RENT } as RentStatusEntity;
+      existingRent.user = { id: userId } as User;
       rentRepository.findOne = jest.fn().mockResolvedValue(existingRent);
       jest.spyOn(global, 'Date').mockImplementation(() => nowTime);
 
-      await expect(rentService.update(rentData)).rejects.toThrowError(
+      await expect(rentService.update(userId, rentData)).rejects.toThrowError(
         BadRequestException
       );
     });
 
     it('should update a rent status', async () => {
+      const userId = 1;
       const rentId = 1;
       const rentData: UpdateRentDTO = {
         id: rentId,
@@ -166,6 +171,7 @@ describe('RentService', () => {
       const existingRent = new Rent();
       existingRent.id = rentId;
       existingRent.status = { id: RentStatus.RENT } as RentStatusEntity;
+      existingRent.user = { id: userId } as User;
       existingRent.start_time = startTime;
       rentRepository.findOne = jest.fn().mockResolvedValue(existingRent);
 
@@ -187,7 +193,7 @@ describe('RentService', () => {
         excludeExtraneousValues: true
       });
 
-      expect(await rentService.update(rentData)).toEqual(result);
+      expect(await rentService.update(userId, rentData)).toEqual(result);
     });
   });
 });

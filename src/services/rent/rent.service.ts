@@ -5,6 +5,7 @@ import { UpdateRentDTO, RentDTO } from './dto/rent.dto';
 import { Rent } from 'src/entity/rent.entity';
 import { RentStatus } from 'src/constants/common.constants';
 import {
+  ForbiddenException,
   NotFoundException,
   BadRequestException
 } from 'src/common/exceptions/custom.exception';
@@ -38,13 +39,14 @@ export class RentService {
     return plainToClass(RentDTO, result, { excludeExtraneousValues: true });
   }
 
-  async update(data: UpdateRentDTO): Promise<RentDTO> {
+  async update(userId: number, data: UpdateRentDTO): Promise<RentDTO> {
     const { id, status } = data;
     const rent = await this.rentRespository.findOne({
       where: { id },
-      relations: ['status']
+      relations: ['status', 'user']
     });
     if (!rent) throw new NotFoundException('Rent is not exist.');
+    if (rent.user.id !== userId) throw new ForbiddenException();
     if (rent.status.id === RentStatus.FINISHED) throw new BadRequestException();
 
     if (status === RentStatus.FINISHED) {
@@ -66,6 +68,13 @@ export class RentService {
   async checkUserAbleToRent(userId: number): Promise<boolean> {
     const result = await this.rentRespository.find({
       where: { user: { id: userId }, status: { id: RentStatus.RENT } }
+    });
+    return !result.length;
+  }
+
+  async checkScooterAbleToRent(scooterId: number): Promise<boolean> {
+    const result = await this.rentRespository.find({
+      where: { scooter: { id: scooterId }, status: { id: RentStatus.RENT } }
     });
     return !result.length;
   }

@@ -7,7 +7,7 @@ import {
   UpdateRentDTO,
   RentDTO
 } from 'src/services/rent/dto/rent.dto';
-import { ForbiddenException } from 'src/common/exceptions/custom.exception';
+import { ConflictException } from 'src/common/exceptions/custom.exception';
 import { RentStatus, ScooterStatus } from 'src/constants/common.constants';
 import { ScooterDTO } from 'src/services/scooter/dto/scooter.dto';
 
@@ -24,6 +24,7 @@ describe('RentController', () => {
           provide: RentService,
           useValue: {
             checkUserAbleToRent: jest.fn(),
+            checkScooterAbleToRent: jest.fn(),
             create: jest.fn(),
             update: jest.fn()
           }
@@ -62,6 +63,9 @@ describe('RentController', () => {
         .spyOn(rentService, 'checkUserAbleToRent')
         .mockImplementation(() => Promise.resolve(true));
       jest
+        .spyOn(rentService, 'checkScooterAbleToRent')
+        .mockImplementation(() => Promise.resolve(true));
+      jest
         .spyOn(scooterService, 'getById')
         .mockImplementation(() => Promise.resolve(mockAvailableScooter));
 
@@ -81,7 +85,7 @@ describe('RentController', () => {
       expect(await controller.create(request, createRentDTO)).toBe(result);
     });
 
-    it('should throw ForbiddenException if user is not able to rent', async () => {
+    it('should throw ConflictException if user is not able to rent', async () => {
       jest
         .spyOn(rentService, 'checkUserAbleToRent')
         .mockImplementation(() => Promise.resolve(false));
@@ -91,10 +95,10 @@ describe('RentController', () => {
 
       await expect(
         controller.create(request, createRentDTO)
-      ).rejects.toThrowError(ForbiddenException);
+      ).rejects.toThrowError(ConflictException);
     });
 
-    it('should throw ForbiddenException if scooter is not available', async () => {
+    it('should throw ConflictException if scooter is not available', async () => {
       const scooterId = 2;
       const mockRepairScooter: ScooterDTO = {
         id: scooterId,
@@ -108,6 +112,9 @@ describe('RentController', () => {
         .spyOn(rentService, 'checkUserAbleToRent')
         .mockImplementation(() => Promise.resolve(true));
       jest
+        .spyOn(rentService, 'checkScooterAbleToRent')
+        .mockImplementation(() => Promise.resolve(false));
+      jest
         .spyOn(scooterService, 'getById')
         .mockImplementation(() => Promise.resolve(mockRepairScooter));
 
@@ -116,12 +123,20 @@ describe('RentController', () => {
 
       await expect(
         controller.create(request, createRentDTO)
-      ).rejects.toThrowError(ForbiddenException);
+      ).rejects.toThrowError(ConflictException);
     });
   });
 
   describe('updateRent', () => {
     it('should update a rent', async () => {
+      const userId = 1;
+      const mockUser = {
+        id: userId,
+        username: 'testuser',
+        name: 'Test User'
+      };
+
+      const mockRequest = { user: mockUser };
       const updateRentDTO: UpdateRentDTO = {
         id: 1,
         status: RentStatus.FINISHED
@@ -132,7 +147,7 @@ describe('RentController', () => {
         .spyOn(rentService, 'update')
         .mockImplementation(() => Promise.resolve(result));
 
-      expect(await controller.update(updateRentDTO)).toBe(result);
+      expect(await controller.update(mockRequest, updateRentDTO)).toBe(result);
     });
   });
 });
