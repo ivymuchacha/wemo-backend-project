@@ -166,3 +166,7 @@ $ npm run start:prod
 # unit tests
 $ npm run test
 ```
+
+### Data
+
+可以透過 `initial.sql` 建置基礎資料
