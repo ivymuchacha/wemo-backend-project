@@ -22,7 +22,7 @@
 
 ### 資料設計
 
-![流程圖](/image/db.png)
+![流程圖](/image/wemo_db.png)
 
 ### 資料夾結構
 
@@ -106,6 +106,8 @@
 
 程式啟動後，可以參考 swagger API 文件。（路徑：`/api`）
 
+![情境](/image/wemo_flow.png)
+
 #### 註冊登入
 
 使用者可以透過 `POST/register` 註冊會員，`POST/login` 登入取得 `Authorization token`。
@@ -118,7 +120,7 @@
 
 #### 租借流程
 
-使用者可以透過 `POST/rent` 租用車輛，再透過 `PUT/scooter` 更改結束租用。
+使用者可以透過 `POST/rent` 租用車輛，再透過 `PUT/rent` 更改結束租用。
 
 #### 使用者租借紀錄
 
